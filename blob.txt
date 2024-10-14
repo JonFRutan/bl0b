@@ -1,0 +1,15 @@
+<sys/stat.h>
+This library provides a set of functions and data structures
+relating to information about files and directories.
+It is commonly used in POSIX-compliant systems for file handling and metadata retrieval.
+
+The struct stat is a structure that holds info on a file or directory.
+Stuff like file type, size, permissions, ownership, and timestamps.
+We use stat() to fill in this struct. 
+The call looks like:
+char* file_path;
+struct stat directory_info;
+stat(file_path, &directory_info);
+stat takes in the file path, and fills in our corresponding struct with gathered info.
+&directory_info is used to pass the address of the struct to be filled, if we just passed directory_info-
+it would just pass a copy of the value instead of our struct. (Due to Cs pass by value)
