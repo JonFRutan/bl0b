@@ -1,3 +1,4 @@
+//jfr
 <sys/stat.h>
 This library provides a set of functions and data structures
 relating to information about files and directories.
@@ -13,3 +14,15 @@ stat(file_path, &directory_info);
 stat takes in the file path, and fills in our corresponding struct with gathered info.
 &directory_info is used to pass the address of the struct to be filled, if we just passed directory_info-
 it would just pass a copy of the value instead of our struct. (Due to Cs pass by value)
+
+
+fread/fwrite - invoke(void *ptr, size_t size, size_t count, FILE *stream);
+Arguments are:
+void *ptr -    Where to data is to be read from.
+size_t size -  Size of each element being read/written in bytes. (1 for chars)
+size_t count - How many of these elements (sections of size) are to be read.
+FILE *stream - The file in which to read/write data.
+
+When we create a (FILE *file) stream, our second argument declaration is intrinsic to what it will do.
+"w" will create a file based on the name if it does not exist, if the file does exist it is wiped.
+"r" will read in the file (text-only in this argument) and will return NULL if the file doesn't exist.

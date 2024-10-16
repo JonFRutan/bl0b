@@ -2,6 +2,7 @@
 //bl0b is for creating blobs of data.
 #include "bl0b.h"
 
+//TODO - Create and free blobs from blob_main, not here.
 int main (int argc, char *argv[]) {
     if (argc <= 1) {
         printf("No arguments provided.");
@@ -14,10 +15,14 @@ int main (int argc, char *argv[]) {
     }
     Blob *blob = blob_main(argv[1]);
     printf("File Name: %s\nFile Size: %d\n",blob->file_name, blob->file_size);
-    print_hex(blob->data, blob->file_size);
+    //print_hex(blob->data, blob->file_size);
+    //blob_to_file(blob, "test.bin");
     free_blob(blob);
 }
 
+//Initiates the blobbing process.
+//TO-DO - If the path is to a directory, instantiate a recursive blob_directory sequence that individually calls blob_file.
+//NOTE - This function should do the handling of calling free_blob and blob_to_file.
 Blob *blob_main(char *path) {
     if (is_directory(path)) {
         return blob_directory(path);
@@ -27,6 +32,7 @@ Blob *blob_main(char *path) {
     }
 }
 
+//NOTE - this may vary depending on the system being used. Firstly I will use a POSIX compliant standard.
 Blob *blob_directory(char *path) {
     return NULL;
 }
@@ -35,36 +41,48 @@ Blob *blob_directory(char *path) {
 //Takes in the file path and creates a blob of the file.
 //NOTE - MAKE SURE ANYTHING CALLING blob_file IS PROVIDING A FILE PATH!
 Blob *blob_file(char *path) {
-    FILE *file = fopen(path, "rb");                                //File opened - Resolved before return.
+    FILE *file = fopen(path, "rb"); //"rb" for "read binary"      //File closed before return.
     if (!file) {
         perror("File couldn't be opened.");
         return NULL;
     }
-    fseek(file, 0, SEEK_END);         //Move to the end of the file.
+    fseek(file, 0, SEEK_END);              //Move to the end of the file.
     size_t file_read_size = ftell(file);   //ftell returns current position (end of file).
-    fseek(file, 0, SEEK_SET);         //Move pointer back to beginning.
+    fseek(file, 0, SEEK_SET);              //Move pointer back to beginning.
 
     Blob *file_blob = (Blob *)malloc(sizeof(Blob));               //malloc call 1 - free_blob resolves
-    //FIXME - Add error handling here in case of malloc failure.
     file_blob->file_name = strdup(path);                          //FIXME - Delimit name based on '\'
     file_blob->data = (char *)malloc(file_read_size);             //malloc call 2 - free_blob resolves
     file_blob->file_size = file_read_size;
 
     //Reading in data...
-    fread(file_blob->data, 1, file_read_size, file);
+    fread(file_blob->data, 1, file_read_size, file);              //Reads the data into blob
     fclose(file);
     return file_blob;
 }
 
+//Takes the blob object and creates a file out of it.
+int blob_to_file(Blob *blob, const char *output_name) {
+    FILE *output_file = fopen(output_name, "wb"); //"wb" for "write binary"   //File closed before return.
+    size_t bytes_written = fwrite(blob->data, 1, blob->file_size, output_file); //Following lines ensure integrity.
+    if (bytes_written != blob->file_size) {
+        printf("Not all of the contents were written to the output file %s", blob->file_name);
+        return 1;
+    } else {
+        printf("Succesfully created blob.");
+    }
+    fclose(output_file);
+    return 0;
+}
+
+//Frees up all malloced space for our blob.
 void free_blob(Blob *blob) {
-    if (blob) {
-        if (blob->data) {
-            free(blob->data);
-        }
-        if (blob->file_name) {
-            free(blob->file_name);
-        }
-        free(blob);       
+    if (blob) {                       //if the blob isn't empty...
+        if (blob->data) {             //if the blob's data isn't empty...
+            free(blob->data);}
+        if (blob->file_name) {        //if the blob's file name isn't empty...
+            free(blob->file_name);}
+        free(blob);                   //After we clear out it's data and name, we clear up the blob.
     }
 }
 

@@ -1,3 +1,4 @@
+//jfr
 #ifndef BL0B_H
 #define BL0B_H
 
@@ -20,5 +21,6 @@ Blob *blob_directory(char *path);
 Blob *blob_file(char *file);
 void free_blob(Blob *blob);
 void print_hex(const char *data, size_t size);
+int blob_to_file(Blob *blob, const char *output_name);
 
 #endif
