@@ -16,7 +16,7 @@ int main (int argc, char *argv[]) {
     Blob *blob = blob_main(argv[1]);
     printf("File Name: %s\nFile Size: %d\n",blob->file_name, blob->file_size);
     //print_hex(blob->data, blob->file_size);
-    //blob_to_file(blob, "test.bin");
+    blob_to_file(blob, "test.bin");
     free_blob(blob);
 }
 
